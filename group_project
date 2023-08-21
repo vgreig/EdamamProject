@@ -1,0 +1,119 @@
+import requests
+
+#define function
+def recipe_search(ingredient, cuisineType):
+  #API credentials
+  app_id = '077d98b5'
+  app_key = '58ae1e6f7d8a026c91b2bf669daa7a0a'
+
+  #Construct the URL for the recipe search API
+  #ulr for ingredient
+  url = f"https://api.edamam.com/search?q={ingredient}&app_id={app_id}&app_key={app_key}"
+  
+  #url2 for cusine
+  url2 = f"https://api.edamam.com/search?q={ingredient}&app_id={app_id}&app_key={app_key}&cuisineType={cuisineType}"
+
+  #Send a GET request to the API and retrieve the response
+  result = requests.get(url)
+  result2 = requests.get(url2)
+
+  # Check if the request was successful
+  if result.status_code != 200:
+    print("Error occurred while accessing the API. Please try again later.")
+    return []
+
+  #Parse the response as JSON
+  data = result.json()
+  data2 = result2.json()
+
+  #Return the list of the recipe hits (hits refers to a key in the JSON response data)
+  return data['hits']
+  return data2['hits']
+
+
+def run():
+  while True:
+    #ask user to choose an option
+    choice = input("Do you want to choose an ingredient (1) or cuisine (2)?\n")
+    if choice == '1':
+      while True:
+        ingredient = input(
+          'Enter one ingredient for recipes (or type "exit" to get to main menu)\n'
+        )
+        if ingredient.lower() == 'exit' or ingredient == 0:
+          print("Exiting the recipe search.\n")
+          break
+
+        #perform recipe search for the provided ingridient
+        results = recipe_search(ingredient, '')
+        if not results:
+          print("No recipes found for the provided ingredient.\n")
+          continue
+
+        #Display the label and URL for each recipe hit
+        for result in results:
+          recipe = result['recipe']
+          print(recipe['label'])
+          print(recipe['url'])
+          print()
+
+        #ask user to search or exit
+        choice = input(
+          "Enter any number to search for another recipe or 'exit' or '0' to get to main menu:\n"
+        )
+        if choice.lower() == 'exit' or choice == 0:
+          print("Exiting the recipe search.")
+          break
+
+    elif choice == '2':
+      while True:
+        cuisine = input(
+          "Enter a cuisine (or type 'exit' to get to main menu)\n")
+        if cuisine.lower() == 'exit' or cuisine == '0':
+          print("Exiting the recipe search.")
+          break
+
+        #perform recipe search for the provided ingridient
+        results2 = recipe_search(cuisine, '')
+        if not results2:
+          print("No recipes found for the provided ingredient.\n")
+          continue
+
+        #Display the label and URL for each recipe hit
+        for result2 in results2:
+          recipe = result2['recipe']
+          print(recipe['label'])
+          print(recipe['url'])
+          print()
+
+        #ask user to search or exit
+        choice = input(
+          "Enter any number to search for another recipe (according to the cuisine) or type 'exit' or '0' to get to main menu:\n"
+        )
+        if choice.lower() == 'exit' or choice == 0:
+          print("Exiting the recipe search.")
+          break
+
+      #ask user to search or exit
+      choice = input(
+        "Do you want to search for another cuisine/ingredient (1) or exit (2)?\n"
+      )
+      if choice == '2':
+        print("Exiting the recipe search.")
+        break
+
+    # Check if the choice is 'exit' or 0
+    elif choice == '0' or choice == 'exit':
+      break
+
+    else:
+      # Check if the choice is neither '1' nor '2'
+      print("Invalid choice. Please choose either 1 or 2.\n")
+      continue
+
+    if choice.lower() == 'exit':
+      print("Exiting the recipe search.")
+      break
+
+
+run()
